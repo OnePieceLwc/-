@@ -1,0 +1,702 @@
+{% extends "base.html" %}
+
+{% block title %}风险上报{% endblock %}
+
+{% block content %}
+<div class="risk-report-container">
+    <div class="card shadow-lg">
+        <!-- 头部区域 -->
+        <div class="card-header bg-gradient-primary text-white py-4">
+            <div class="header-content text-center">
+                <div class="header-icon mb-3">
+                    <i class="fas fa-shield-alt fa-3x"></i>
+                </div>
+                <h3 class="title-text">风险事件上报</h3>
+            </div>
+        </div>
+
+        <!-- 表单区域 -->
+        <div class="card-body p-5">
+            <form id="riskReportForm" class="needs-validation" novalidate>
+                <!-- 风险标题 -->
+                <div class="form-group mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-heading me-2"></i>风险标题
+                    </label>
+                    <input type="text" class="form-control form-control-lg" 
+                           name="title" required 
+                           placeholder="请输入风险事件标题（简要描述风险的主要内容）">
+                </div>
+
+                <!-- 风险类型和等级 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-tag me-2"></i>风险类型
+                            </label>
+                            <select class="form-select form-select-lg" name="type" required>
+                                <option value="">请选择风险类型</option>
+                                <option value="data_leak">数据泄露</option>
+                                <option value="network_attack">网络攻击</option>
+                                <option value="system_vulnerability">系统漏洞</option>
+                                <option value="unauthorized_access">未授权访问</option>
+                                <option value="compliance_risk">合规风险</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-exclamation-triangle me-2"></i>风险等级
+                            </label>
+                            <div class="risk-level-container">
+                                <div class="form-range-container">
+                                    <input type="range" class="form-range" name="risk_level" 
+                                           min="0" max="1" step="0.1" value="0.5">
+                                </div>
+                                <div class="risk-level-indicator">
+                                    <span class="risk-value"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 风险描述 -->
+                <div class="form-group mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-file-alt me-2"></i>详细描述
+                    </label>
+                    <textarea class="form-control" name="description" rows="6" required
+                              placeholder="请详细描述以下内容：
+1. 风险事件的具体情况和背景
+2. 可能造成的影响和危害程度
+3. 建议采取的处理方案和措施"></textarea>
+                </div>
+
+                <!-- 受影响系统 -->
+                <div class="form-group mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-network-wired me-2"></i>受影响系统
+                    </label>
+                    <div class="affected-systems-container">
+                        <div class="systems-grid">
+                            <div class="system-option">
+                                <input type="checkbox" class="btn-check" name="affected_systems[]" 
+                                       id="coreSystem" value="core_system">
+                                <label class="btn btn-outline-primary" for="coreSystem">
+                                    <i class="fas fa-server me-2"></i>核心系统
+                                </label>
+                            </div>
+                            <div class="system-option">
+                                <input type="checkbox" class="btn-check" name="affected_systems[]" 
+                                       id="businessSystem" value="business_system">
+                                <label class="btn btn-outline-primary" for="businessSystem">
+                                    <i class="fas fa-building me-2"></i>业务系统
+                                </label>
+                            </div>
+                            <div class="system-option">
+                                <input type="checkbox" class="btn-check" name="affected_systems[]" 
+                                       id="supportSystem" value="support_system">
+                                <label class="btn btn-outline-primary" for="supportSystem">
+                                    <i class="fas fa-cogs me-2"></i>支撑系统
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 提交按钮 -->
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-primary btn-lg submit-btn">
+                        <i class="fas fa-paper-plane me-2"></i>提交报告
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 基础样式 */
+.risk-report-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* 卡片样式 */
+.card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 头部样式 */
+.card-header {
+    background: linear-gradient(135deg, rgba(26,115,232,0.95), rgba(40,156,245,0.95));
+    border-radius: 20px 20px 0 0;
+    border: none;
+    padding: 3rem 2rem !important;
+    text-align: center;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-text {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.header-icon {
+    margin: 0 auto 2rem;
+    width: 90px;
+    height: 90px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon i {
+    font-size: 3.5rem;
+    color: #ffffff;
+}
+
+/* 表单容器 */
+.form-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* 表单组样式 */
+.form-group {
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 标签样式 */
+.form-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    align-self: flex-start;
+    padding-left: calc((100% - 600px) / 2);
+    width: 100%;
+}
+
+/* 统一所有输入框的基础样式和宽度 */
+.form-control,
+.form-select,
+.risk-level-container,
+.affected-systems-container {
+    width: 600px !important;
+    margin: 0 auto;
+    border-radius: 15px !important;
+    border: 2px solid #e9ecef !important;
+    background-color: #f8f9fa !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* 输入框悬停和焦点效果 */
+.form-control:hover,
+.form-select:hover,
+.risk-level-container:hover,
+.affected-systems-container:hover {
+    border-color: #1a73e8 !important;
+    box-shadow: 0 4px 15px rgba(26,115,232,0.1);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #1a73e8 !important;
+    box-shadow: 0 4px 15px rgba(26,115,232,0.15) !important;
+    background-color: #ffffff !important;
+}
+
+/* 风险标题输入框 */
+.form-control-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    height: auto;
+}
+
+/* 风险类型选择框 */
+.form-select-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    height: auto;
+    background-position: right 1.5rem center;
+}
+
+/* 风险类型和等级的行布局 */
+.row.mb-4 {
+    width: 600px;  /* 与其他输入框保持一致 */
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.col-md-6 {
+    width: calc(50% - 10px);  /* 考虑间距的宽度计算 */
+    padding: 0;
+}
+
+.col-md-6 .form-select,
+.col-md-6 .risk-level-container {
+    width: 100% !important;  /* 使用100%宽度填充父容器 */
+}
+
+/* 风险等级滑块容器 */
+.risk-level-container {
+    width: 200px !important;  /* 减小容器宽度到200px */
+    padding: 0.8rem;  /* 减小内边距 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 滑块容器 */
+.form-range-container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+/* 滑块样式 */
+.form-range {
+    width: 100%;
+    height: 8px;  /* 增加滑块高度 */
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+/* 滑块轨道样式 */
+.form-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #28a745 0%, #ffc107 50%, #dc3545 100%);
+    border-radius: 4px;
+}
+
+.form-range::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #28a745 0%, #ffc107 50%, #dc3545 100%);
+    border-radius: 4px;
+}
+
+/* 滑块拇指样式 */
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #1a73e8;
+    margin-top: -6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.form-range::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #1a73e8;
+    margin-top: -6px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+/* 风险等级指示器 */
+.risk-level-indicator {
+    text-align: center;
+    margin-top: 0.7rem;  /* 稍微减小上边距 */
+}
+
+.risk-value {
+    font-size: 0.9rem;  /* 减小字体大小 */
+    font-weight: 600;
+    padding: 0.3rem 1rem;  /* 减小内边距 */
+    border-radius: 12px;
+    background: rgba(0,0,0,0.05);
+}
+
+/* 详细描述文本框 */
+textarea.form-control {
+    padding: 1.5rem;
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* 受影响系统容器 */
+.affected-systems-container {
+    padding: 1.2rem;
+    min-height: 90px;
+}
+
+/* 系统选项按钮样式 */
+.system-option .btn {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 42px;
+    background-color: #ffffff;
+    border: 1.5px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.system-option .btn i {
+    font-size: 0.9rem;
+}
+
+.btn-check:checked + .btn {
+    background: linear-gradient(135deg, #1a73e8, #289cf5);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(26,115,232,0.2);
+}
+
+.system-option .btn:hover {
+    border-color: #1a73e8;
+    background-color: rgba(26,115,232,0.05);
+    transform: translateY(-1px);
+}
+
+/* 提交按钮容器样式 */
+.text-center {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 提交按钮样式 */
+.submit-btn {
+    min-width: 200px;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #1a73e8, #289cf5);
+    border: none;
+    box-shadow: 0 4px 15px rgba(26,115,232,0.2);
+    transition: all 0.3s ease;
+    margin: 0 auto;  /* 添加这行确保按钮居中 */
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26,115,232,0.3);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .form-control,
+    .form-select,
+    .risk-level-container,
+    .affected-systems-container,
+    .row.mb-4 {
+        width: 100% !important;
+    }
+    
+    .form-range-container {
+        width: 95%;  /* 在小屏幕上增加滑块宽度 */
+    }
+    
+    .form-label {
+        padding-left: 1rem;
+    }
+}
+
+/* 统一输入框提示文字样式 */
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder {
+    color: #6c757d;
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+/* 受影响系统网格布局 */
+.systems-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+/* 系统选项样式 */
+.system-option {
+    width: 140px;
+}
+
+/* 系统选项按钮样式 */
+.system-option .btn {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    height: 38px;
+    background-color: #ffffff;
+    border: 1.5px solid #e9ecef;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.system-option .btn i {
+    font-size: 0.9rem;
+}
+
+.btn-check:checked + .btn {
+    background: linear-gradient(135deg, #1a73e8, #289cf5);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(26,115,232,0.2);
+}
+
+.system-option .btn:hover {
+    border-color: #1a73e8;
+    background-color: rgba(26,115,232,0.05);
+    transform: translateY(-1px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .systems-grid {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .system-option {
+        width: 120px;
+    }
+}
+
+@media (max-width: 576px) {
+    .systems-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .system-option {
+        width: 200px;
+    }
+}
+
+/* 调整行布局中的列宽度 */
+.row.mb-4 {
+    width: 600px;  /* 与其他输入框保持一致 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.col-md-6 {
+    padding: 0;  /* 移除内边距 */
+}
+
+/* 确保风险类型和风险等级的容器宽度一致 */
+.col-md-6 .form-group {
+    width: 100%;
+}
+
+.col-md-6 .form-select,
+.col-md-6 .risk-level-container {
+    width: 100% !important;  /* 覆盖之前的固定宽度 */
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('riskReportForm');
+    const riskLevel = form.querySelector('input[name="risk_level"]');
+    const riskValue = document.querySelector('.risk-value');
+
+    // 更新风险等级显示
+    function updateRiskLevel() {
+        const value = parseFloat(riskLevel.value);
+        let levelText = '';
+        let color = '';
+
+        if (value < 0.3) {
+            levelText = '低风险';
+            color = '#28a745';
+        } else if (value < 0.7) {
+            levelText = '中风险';
+            color = '#ffc107';
+        } else {
+            levelText = '高风险';
+            color = '#dc3545';
+        }
+
+        riskValue.textContent = `${levelText} (${Math.round(value * 100)}%)`;
+        riskValue.style.color = color;
+    }
+
+    // 提交风险报告函数
+    async function submitRiskReport(formData) {
+        try {
+            const response = await fetch('/api/risk/report', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || '提交失败');
+            }
+            
+            return data;
+        } catch (error) {
+            throw new Error(error.message || '网络错误，请稍后重试');
+        }
+    }
+
+    // 表单提交处理
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // 表单验证
+        if (!validateForm()) {
+            return;
+        }
+        
+        const submitBtn = this.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>提交中...';
+        
+        try {
+            // 收集表单数据并转换为JSON对象
+            const formData = {
+                title: form.querySelector('input[name="title"]').value.trim(),
+                type: form.querySelector('select[name="type"]').value,
+                risk_level: form.querySelector('input[name="risk_level"]').value,
+                description: form.querySelector('textarea[name="description"]').value.trim(),
+                affected_systems: Array.from(form.querySelectorAll('input[name="affected_systems[]"]:checked'))
+                    .map(checkbox => checkbox.value)
+            };
+            
+            const response = await fetch('/api/risk/report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.status === 'success') {
+                await showSuccessMessage();
+                // 重置表单
+                form.reset();
+                // 重置风险等级显示
+                updateRiskLevel();
+            } else {
+                throw new Error(data.message || '提交失败');
+            }
+        } catch (error) {
+            showErrorMessage(error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交报告';
+        }
+    });
+
+    // 表单验证函数
+    function validateForm() {
+        const title = form.querySelector('input[name="title"]').value.trim();
+        const type = form.querySelector('select[name="type"]').value;
+        const description = form.querySelector('textarea[name="description"]').value.trim();
+        const affectedSystems = form.querySelectorAll('input[name="affected_systems[]"]:checked');
+
+        if (!title) {
+            showErrorMessage('请输入风险标题');
+            return false;
+        }
+
+        if (!type) {
+            showErrorMessage('请选择风险类型');
+            return false;
+        }
+
+        if (!description) {
+            showErrorMessage('请填写详细描述');
+            return false;
+        }
+
+        if (affectedSystems.length === 0) {
+            showErrorMessage('请选择至少一个受影响系统');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 提示消息函数
+    function showSuccessMessage() {
+        return Swal.fire({
+            icon: 'success',
+            title: '提交成功',
+            text: '风险事件已成功上报',
+            confirmButtonText: '确定',
+            confirmButtonColor: '#1a73e8'
+        });
+    }
+
+    function showErrorMessage(message) {
+        return Swal.fire({
+            icon: 'error',
+            title: '提交失败',
+            text: message,
+            confirmButtonText: '确定'
+        });
+    }
+
+    // 初始化
+    updateRiskLevel();
+    riskLevel.addEventListener('input', updateRiskLevel);
+});
+</script>
+{% endblock %} 
