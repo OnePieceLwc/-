@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}风险分析{% endblock %}
+
+{% block content %}
+<div class="analysis-container">
+    <!-- 时间范围选择器 -->
+    <div class="filter-section mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-auto">
+                        <label class="form-label mb-0">分析时间范围：</label>
+                    </div>
+                    <div class="col-md-auto">
+                        <select class="form-select" id="timeRange">
+                            <option value="7">最近7天</option>
+                            <option value="30">最近30天</option>
+                            <option value="90">最近90天</option>
+                            <option value="365">最近一年</option>
+                        </select>
+                    </div>
+                    <div class="col-md-auto">
+                        <button class="btn btn-primary" onclick="updateAnalysis()">
+                            <i class="fas fa-sync-alt me-2"></i>更新分析
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分析卡片 -->
+    <div class="row g-4">
+        <!-- 风险趋势分析 -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">风险趋势分析</h5>
+                </div>
+                <div class="card-body">
+                    <div id="trendChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险类型分布 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">风险类型分布</h5>
+                </div>
+                <div class="card-body">
+                    <div id="typeChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 风险等级分布 -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">风险等级分布</h5>
+                </div>
+                <div class="card-body">
+                    <div id="levelChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analysis-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    padding: 1rem 1.25rem;
+}
+
+.card-header h5 {
+    color: #2c3e50;
+    font-weight: 600;
+}
+</style>
+
+<script>
+function updateAnalysis() {
+    const timeRange = document.getElementById('timeRange').value;
+    // 调用后端API获取数据并更新图表
+    loadAnalysisData(timeRange);
+}
+
+// 其他图表相关代码保持不变
+</script>
+{% endblock %} 

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}风险列表{% endblock %}
+
+{% block content %}
+<div class="risk-list-container">
+    <div class="card shadow-lg">
+        <div class="card-header bg-white p-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                <i class="fas fa-list text-primary me-2"></i>风险事件列表
+            </h3>
+            <div class="d-flex gap-2">
+                <select class="form-select" id="statusFilter">
+                    <option value="">所有状态</option>
+                    <option value="pending">待处理</option>
+                    <option value="processing">处理中</option>
+                    <option value="resolved">已解决</option>
+                </select>
+                <select class="form-select" id="typeFilter">
+                    <option value="">所有类型</option>
+                    <option value="data_leak">数据泄露</option>
+                    <option value="network_attack">网络攻击</option>
+                    <option value="system_vulnerability">系统漏洞</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>标题</th>
+                            <th>风险类型</th>
+                            <th>风险等级</th>
+                            <th>状态</th>
+                            <th>报告时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskListBody">
+                        <!-- 数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white p-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0" id="pagination">
+                    <!-- 分页将通过JavaScript动态生成 -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<style>
+.risk-list-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.table th {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.risk-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.risk-high { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+.risk-medium { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+.risk-low { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadRiskList();
+    
+    // 添加筛选器事件监听
+    document.getElementById('statusFilter').addEventListener('change', loadRiskList);
+    document.getElementById('typeFilter').addEventListener('change', loadRiskList);
+});
+
+async function loadRiskList(page = 1) {
+    try {
+        const status = document.getElementById('statusFilter').value;
+        const type = document.getElementById('typeFilter').value;
+        
+        const response = await fetch(`/api/risk/list?page=${page}&status=${status}&type=${type}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            renderRiskList(data.data);
+            renderPagination(data.current_page, data.pages);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function renderRiskList(risks) {
+    const tbody = document.getElementById('riskListBody');
+    tbody.innerHTML = risks.map(risk => `
+        <tr>
+            <td>${risk.id}</td>
+            <td>${risk.title}</td>
+            <td>${getRiskTypeLabel(risk.type)}</td>
+            <td>
+                <span class="risk-badge ${getRiskLevelClass(risk.risk_level)}">
+                    ${getRiskLevelLabel(risk.risk_level)}
+                </span>
+            </td>
+            <td>${getStatusLabel(risk.status)}</td>
+            <td>${formatDate(risk.timestamp)}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewRiskDetail(${risk.id})">
+                    查看详情
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function getRiskTypeLabel(type) {
+    const labels = {
+        'data_leak': '数据泄露',
+        'network_attack': '网络攻击',
+        'system_vulnerability': '系统漏洞',
+        'unauthorized_access': '未授权访问',
+        'compliance_risk': '合规风险'
+    };
+    return labels[type] || type;
+}
+
+function getRiskLevelClass(level) {
+    if (level >= 0.7) return 'risk-high';
+    if (level >= 0.3) return 'risk-medium';
+    return 'risk-low';
+}
+
+function getRiskLevelLabel(level) {
+    if (level >= 0.7) return '高风险';
+    if (level >= 0.3) return '中风险';
+    return '低风险';
+}
+
+function getStatusLabel(status) {
+    const labels = {
+        'pending': '<span class="badge bg-warning">待处理</span>',
+        'processing': '<span class="badge bg-info">处理中</span>',
+        'resolved': '<span class="badge bg-success">已解决</span>'
+    };
+    return labels[status] || status;
+}
+
+function formatDate(timestamp) {
+    return new Date(timestamp).toLocaleString('zh-CN');
+}
+
+function viewRiskDetail(id) {
+    window.location.href = `/risk-detail/${id}`;
+}
+</script>
+{% endblock %} 
