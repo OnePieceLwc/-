@@ -55,6 +55,15 @@ python run.py
 └── run.py # 应用启动脚本
 ```
 
+## 运行结果展示
+![62470c849ff0240efdc271b9ed03586](https://github.com/user-attachments/assets/83dfba95-1c48-45d0-a81c-0c9395f2bb11)
+![b976b847b8028870665ac400fdd78ac](https://github.com/user-attachments/assets/12115282-30f9-44da-a33b-916c0ffd4c5f)
+![b8aa73d55982b2a47a750bab0fdb556](https://github.com/user-attachments/assets/dfcbf109-0f83-4f09-b934-c1387743ab93)
+![5efafcd030a468f9dbee6c4dfd7ec5c](https://github.com/user-attachments/assets/cb222c71-4c90-4d09-bb0c-df61e9725d4d)
+
+
+
+
 ## 注意事项
 
 1. 数据库相关：
